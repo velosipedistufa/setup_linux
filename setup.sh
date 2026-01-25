@@ -21,7 +21,9 @@ runuser -u alex git clone https://codeberg.org/dwl/dwl
 cp /home/alex/appearance/dwl/config.h /home/alex/appearance/dwl
 runuser -u alex  make
 #./dwl
-systemctl enable ly@service #ly@.service outputs Failed to enable unit: Refusing to operate on template unit ly@.service when destination unit multi-user.target is a non-template unit, on both vm and host
+#systemctl enable ly@service #ly@.service outputs Failed to enable unit: Refusing to operate on template unit ly@.service when destination unit multi-user.target is a non-template unit, on both vm and host
+systemctl enable ly@tty2.service
+systemctl disable getty@tty2.service
 
 #cp start-dwl.sh /home/alex/appearance
 #cp config.h /home/alex/dwl/
