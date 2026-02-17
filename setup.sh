@@ -37,3 +37,6 @@ echo "we're done"
 
 #below is test field, if some command will help
 systemctl --user enable --now pipewire wireplumber
+
+#for vm's
+#sudo pacman -S qemu-full virt-manager libvirt polkit dmidecode dnsmasq
