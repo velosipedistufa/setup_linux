@@ -1,1 +1,1 @@
-sudo apt install kitty git
+sudo apt install kitty git 7zip
