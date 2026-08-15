@@ -10,11 +10,11 @@ sudo cp -a /home/alex/appearance/waybar/. /etc/xdg/waybar
 pacman -Syu --noconfirm fuzzel ffmpeg swaybg swayimg waybar pipewire wireplumber wayland libinput pkg-config pipewire-jack git cmatrix btop htop go udiskie xdg-desktop-portal xdg-desktop-portal-wlr kitty yazi transmission mousepad playerctl bluez bluez-utils jq libxss mailcap libxt gnu-free-fonts lxappearance gtk4 pipewire-alsa pipewire-v4l2 sof-firmware alsa-ucm-conf grim slurp wl-clipboard swappy gvfs 7zip neovim hyfetch usbutils wget simple-scan docker blueman bluez bluez-utils android-tools dnsutils llvm gsettings-desktop-schemas udisks2 make python
 #pipewire-alsa should be removed as far as firefox will implement pipewire support
 cd /home/alex
-runuser -u alex git clone https://aur.archlinux.org/yay.git
-cd yay
+runuser -u alex git clone https://aur.archlinux.org/paru.git
+cd paru
 runuser -u alex makepkg -si
 cd ..
-runuser -u alex yay -S --sudoloop wlroots0.19 wayland-protocols ly flat-remix flat-remix-gtk stig mihomo mihomo-tui-git :#vimix-gtk-theme
+runuser -u alex paru -S --sudoloop wlroots0.19 wayland-protocols ly flat-remix flat-remix-gtk stig mihomo mihomo-tui-git :#vimix-gtk-theme
 
 cd /home/alex/setup_linux
 
