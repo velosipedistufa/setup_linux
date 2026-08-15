@@ -14,7 +14,7 @@ runuser -u alex git clone https://aur.archlinux.org/yay.git
 cd yay
 runuser -u alex makepkg -si
 cd ..
-runuser -u alex yay -S --sudoloop wlroots0.19 wayland-protocols ly flat-remix flat-remix-gtk stig mihomo-tui-git :#vimix-gtk-theme
+runuser -u alex yay -S --sudoloop wlroots0.19 wayland-protocols ly flat-remix flat-remix-gtk stig mihomo mihomo-tui-git :#vimix-gtk-theme
 
 cd /home/alex/setup_linux
 
