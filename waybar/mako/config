@@ -1,0 +1,21 @@
+# OLED + 2077 yellow accent. Installed to ~/.config/mako/config
+font=AtkynsonMono Nerd Font 11
+background-color=#0b0c10ee
+text-color=#e6e8ee
+border-color=#fcee0a
+border-size=1
+border-radius=0
+padding=8
+margin=8
+width=360
+default-timeout=5000
+ignore-timeout=0
+max-visible=4
+anchor=top-right
+layer=overlay
+on-button-left=dismiss
+on-button-right=dismiss
+
+[urgency=critical]
+border-color=#ff6a00
+default-timeout=8000

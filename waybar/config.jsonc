@@ -1,216 +1,159 @@
 // -*- mode: jsonc -*-
 {
-    // "layer": "top", // Waybar at top layer
-    // "position": "bottom", // Waybar position (top|bottom|left|right)
-    "height": 30, // Waybar height (to be removed for auto height)
-    // "width": 1280, // Waybar width
-    "spacing": 4, // Gaps between modules (4px)
-    // Choose the order of the modules
+    "layer": "top",
+    "position": "top",
+    "mode": "dock",
+    "exclusive": true,
+    "passthrough": false,
+    "height": 30,
+    "margin-top": 4,
+    "margin-left": 6,
+    "margin-right": 6,
+    "margin-bottom": 0,
+    "spacing": 0,
+    "reload_style_on_change": true,
     "modules-left": [
-	"clock",
-	"sway/workspaces",
-        "sway/mode",
-        "sway/scratchpad",
-        "custom/media"
+        "custom/layout",
+        "custom/session",
+        "tray"
     ],
     "modules-center": [
-        "sway/window"
+        "clock",
+        "clock#date"
     ],
     "modules-right": [
-        "mpd",
-        "idle_inhibitor",
         "wireplumber",
-        "network",
-        "power-profiles-daemon",
-	"cpu",
-        "memory",
+        "custom/cpu",
         "temperature",
-        "backlight",
-        "keyboard-state",
-        "sway/language",
-        "battery",
-        "battery#bat2",
-        "tray",
-        "custom/power"
+        "custom/mem",
+        "custom/gpu",
+        "custom/vram",
+        "custom/net",
+        "custom/vpn",
+        "bluetooth",
+        "custom/bashirov",
+        "custom/host6",
+        "custom/lan"
     ],
-    // Modules configuration
-    // "sway/workspaces": {
-    //     "disable-scroll": true,
-    //     "all-outputs": true,
-    //     "warp-on-scroll": false,
-    //     "format": "{name}: {icon}",
-    //     "format-icons": {
-    //         "1": "",
-    //         "2": "",
-    //         "3": "",
-    //         "4": "",
-    //         "5": "",
-    //         "urgent": "",
-    //         "focused": "",
-    //         "default": ""
-    //     }
-    // },
-    "keyboard-state": {
-        "numlock": true,
-        "capslock": true,
-        "format": "{name} {icon}",
-        "format-icons": {
-            "locked": "",
-            "unlocked": ""
-        }
+    "custom/layout": {
+        "exec": "python3 $HOME/.config/waybar/scripts/layout.py",
+        "return-type": "json",
+        "interval": 1,
+        "tooltip": true
     },
-    "sway/mode": {
-        "format": "<span style=\"italic\">{}</span>"
-    },
-    "sway/scratchpad": {
-        "format": "{icon} {count}",
-        "show-empty": false,
-        "format-icons": ["", ""],
+    "custom/session": {
+        "format": "⏻",
         "tooltip": true,
-        "tooltip-format": "{app}: {title}"
-    },
-    "mpd": {
-        "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
-        "format-disconnected": "Disconnected ",
-        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
-        "unknown-tag": "N/A",
-        "interval": 5,
-        "consume-icons": {
-            "on": " "
-        },
-        "random-icons": {
-            "off": "<span color=\"#f53c3c\"></span> ",
-            "on": " "
-        },
-        "repeat-icons": {
-            "on": " "
-        },
-        "single-icons": {
-            "on": "1 "
-        },
-        "state-icons": {
-            "paused": "",
-            "playing": ""
-        },
-        "tooltip-format": "MPD (connected)",
-        "tooltip-format-disconnected": "MPD (disconnected)"
-    },
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        }
+        "tooltip-format": "logout / suspend",
+        "on-click": "$HOME/.config/waybar/scripts/session.sh"
     },
     "tray": {
-        // "icon-size": 21,
-        "spacing": 10
+        "icon-size": 14,
+        "spacing": 6
     },
     "clock": {
-	"interval": 60,
-	"format": "{:%H:%M}",
-	"max-length": 25
+        "interval": 1,
+        "format": "{:%H:%M}",
+        "tooltip-format": "{:%A %d.%m.%Y}\n{calendar}",
+        "calendar": {
+            "mode": "month",
+            "weeks-pos": "left",
+            "format": {
+                "today": "<span color='#fcee0a'><b>{}</b></span>"
+            }
+        }
     },
-    "cpu": {
-        "format": "{usage}% ",
+    "clock#date": {
+        "interval": 60,
+        "format": "{:%d.%m.%Y}",
         "tooltip": false
     },
-    "memory": {
-        "format": "{}% "
+    "wireplumber": {
+        "format": "{volume}% {icon}",
+        "format-muted": "muted {icon}",
+        "format-icons": ["", "", ""],
+        "scroll-step": 5,
+        "max-volume": 100,
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "tooltip": true
+    },
+    "custom/cpu": {
+        "exec": "python3 $HOME/.config/waybar/scripts/cpu.py",
+        "return-type": "json",
+        "interval": 2,
+        "tooltip": true
     },
     "temperature": {
-        // "thermal-zone": 2,
-        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
-        "critical-threshold": 80,
-        // "format-critical": "{temperatureC}°C {icon}",
+        "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+        "input-filename": "temp1_input",
+        "interval": 2,
+        "critical-threshold": 85,
+        "warning-threshold": 70,
         "format": "{temperatureC}°C {icon}",
-        "format-icons": ["", "", ""]
+        "format-warning": "{temperatureC}°C {icon}",
+        "format-critical": "{temperatureC}°C {icon}",
+        "format-icons": ["", "", ""],
+        "tooltip": true,
+        "tooltip-format": "CPU {temperatureC}°C"
     },
-    "backlight": {
-        // "device": "acpi_video1",
-        "format": "{percent}% {icon}",
-        "format-icons": ["", "", "", "", "", "", "", "", ""]
-    },
-    "battery": {
-        "states": {
-            // "good": 95,
-            "warning": 30,
-            "critical": 15
-        },
-        "format": "{capacity}% {icon}",
-        "format-full": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "{time} {icon}",
-        // "format-good": "", // An empty format will hide the module
-        // "format-full": "",
-        "format-icons": ["", "", "", "", ""]
-    },
-    "battery#bat2": {
-        "bat": "BAT2"
-    },
-    "power-profiles-daemon": {
-      "format": "{icon}",
-      "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
-      "tooltip": true,
-      "format-icons": {
-        "default": "",
-        "performance": "",
-        "balanced": "",
-        "power-saver": ""
-      }
-    },
-    "network": {
-        // "interface": "wlp2*", // (Optional) To force the use of this interface
-        "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-ethernet": "{ipaddr}/{cidr} ",
-        "tooltip-format": "{ifname} via {gwaddr} ",
-        "format-linked": "{ifname} (No IP) ",
-        "format-disconnected": "Disconnected ⚠",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}"
-    },/*
-    "pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
-        "format": "{volume}% {icon} {format_source}",
-        "format-bluetooth": "{volume}% {icon} {format_source}",
-        "format-bluetooth-muted": " {icon} {format_source}",
-        "format-muted": " {format_source}",
-        "format-source": "{volume}% ",
-        "format-source-muted": "",
-        "format-icons": {
-            "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": ["", "", ""]
-        },
-        "on-click": "pavucontrol"
-    },*/
-    "custom/media": {
-        "format": "{icon} {text}",
+    "custom/mem": {
+        "exec": "python3 $HOME/.config/waybar/scripts/mem.py",
         "return-type": "json",
-        "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "default": "🎜"
-        },
-        "escape": true,
-        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+        "interval": 2,
+        "tooltip": true
     },
-    "custom/power": {
-        "format" : "⏻ ",
-		"tooltip": false,
-		"menu": "on-click",
-		"menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
-		"menu-actions": {
-			"shutdown": "shutdown",
-			"reboot": "reboot",
-			"suspend": "systemctl suspend",
-			"hibernate": "systemctl hibernate"
-		}
+    "custom/gpu": {
+        "exec": "python3 $HOME/.config/waybar/scripts/gpu.py",
+        "return-type": "json",
+        "interval": 2,
+        "tooltip": true
+    },
+    "custom/vram": {
+        "exec": "python3 $HOME/.config/waybar/scripts/vram.py",
+        "return-type": "json",
+        "interval": 2,
+        "tooltip": true
+    },
+    "custom/net": {
+        "exec": "python3 $HOME/.config/waybar/scripts/net.py",
+        "return-type": "json",
+        "interval": 5,
+        "tooltip": true
+    },
+    "custom/vpn": {
+        "exec": "python3 $HOME/.config/waybar/scripts/vpn.py",
+        "return-type": "json",
+        "interval": 10,
+        "tooltip": true,
+        "on-click": "$HOME/.config/waybar/scripts/vpn-toggle.sh"
+    },
+    "bluetooth": {
+        "format": "",
+        "format-disabled": "bt",
+        "format-off": "bt",
+        "format-connected": "",
+        "tooltip-format": "{controller_alias} {status}",
+        "tooltip-format-connected": "{controller_alias}\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}",
+        "on-click": "blueman-manager"
+    },
+    "custom/host6": {
+        "exec": "python3 $HOME/.config/waybar/scripts/host6.py",
+        "return-type": "json",
+        "interval": 30,
+        "tooltip": true
+    },
+    "custom/bashirov": {
+        "exec": "python3 $HOME/.config/waybar/scripts/bashirov.py",
+        "return-type": "json",
+        "interval": 60,
+        "tooltip": true,
+        "markup": "pango"
+    },
+    "custom/lan": {
+        "exec": "python3 $HOME/.config/waybar/scripts/lan.py",
+        "return-type": "json",
+        "interval": 30,
+        "tooltip": true
     }
 }
-

@@ -1,0 +1,18 @@
+# Site-specific secrets and machine paths — copy globals.example.sh
+globals.sh
+
+# Session / local junk, never publish
+forGrok.md
+PLAN_WAYBAR.md
+*.log
+__pycache__/
+*.pyc
+
+# Built helpers
+waybar/scripts/kbgroup
+waybar/scripts/layout-watch
+waybar/scripts/*.o
+
+# Generated / machine-specific udev (uniq + username)
+udev/99-layout-watch.rules
+udev/99-zmk-layout-watch.rules

@@ -1,3 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")" && pwd)"
+if [ ! -f "$HERE/globals.sh" ]; then
+	echo "copy globals.example.sh to globals.sh and edit" >&2
+	exit 1
+fi
+# shellcheck disable=SC1091
+. "$HERE/globals.sh"
+
 mkswap -U clear --size 4G --file /swapfile
 swapon /swapfile
 echo /swapfile none swap defaults 0 0 >> /etc/fstab
@@ -16,12 +26,12 @@ grub-install --target=x86_64-efi \
   --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
-echo arch > /etc/hostname
+echo "${HOSTNAME:-arch}" > /etc/hostname
 
-id -u alex >/dev/null 2>&1 || sudo useradd -m -G wheel -s /bin/bash alex
+id -u "$USER_NAME" >/dev/null 2>&1 || useradd -m -G wheel -s /bin/bash "$USER_NAME"
 
-# Set password (strong hash method)
-echo "alex:123" | sudo chpasswd --crypt-method YESCRYPT
+# Set password (strong hash method). Value comes from globals.sh — not committed.
+echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd --crypt-method YESCRYPT
 
 # Enable wheel sudo via drop-in
 install -Dm440 /dev/stdin /etc/sudoers.d/10-wheel <<'EOF'

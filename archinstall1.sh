@@ -1,8 +1,24 @@
+#!/bin/bash
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")" && pwd)"
 #loadkeys colemak
 #cat /sys/firmware/efi/fw_platform_size
 #ping -c 4 8.8.8.8
+if [ ! -f "$HERE/globals.sh" ]; then
+	echo "copy globals.example.sh to globals.sh and edit DISK / USER_NAME / passwords" >&2
+	exit 1
+fi
+# shellcheck disable=SC1091
+. "$HERE/globals.sh"
+
+disk_part() {
+	case "$DISK" in
+		*nvme*|*mmcblk*|*loop*|*nbd*) echo "${DISK}p$1" ;;
+		*) echo "${DISK}$1" ;;
+	esac
+}
+
 cd
-DISK=/dev/nvme0n1
 sgdisk --zap-all "$DISK"
 sgdisk \
   -n 1:0:+1G   -t 1:ef00 -c 1:"EFI System" \
@@ -10,14 +26,16 @@ sgdisk \
   "$DISK"
 partprobe "$DISK"
 
+EFI="$(disk_part 1)"
+ROOT="$(disk_part 2)"
 
-#cfdisk /dev/$DISK #(1G EFI system, Then the rest is Linux root (x86_64)) maybe arm one day...
+#cfdisk "$DISK" #(1G EFI system, Then the rest is Linux root (x86_64)) maybe arm one day...
 
-mkfs.ext4 $DISK'p2'
-mkfs.fat -F 32 $DISK'p1'
+mkfs.ext4 "$ROOT"
+mkfs.fat -F 32 "$EFI"
 
-mount $DISK'p2' /mnt
-mount --mkdir $DISK'p1' /mnt/boot
+mount "$ROOT" /mnt
+mount --mkdir "$EFI" /mnt/boot
  timedatectl set-ntp true
  pacman-key --init
  pacman-key --populate archlinux
@@ -31,4 +49,3 @@ pacstrap -K /mnt base base-devel linux linux-firmware networkmanager network-man
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 #arch-chroot /mnt /bin/bash -eux <<'CHROOT'
-

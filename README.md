@@ -1,2 +1,34 @@
 # setup_linux
-repo with my setup scripts for arch and debian.
+
+Arch (and a bit of Debian) install + dwl/Waybar session.
+
+## Private data (`globals.sh`)
+
+Site-specific values live in **one file**. It is not committed.
+
+```sh
+cp globals.example.sh globals.sh
+$EDITOR globals.sh
+```
+
+| Variable | Used for |
+|---|---|
+| `USER_NAME` / `USER_PASSWORD` | `archinstall2.sh` user + password (`123` in the example is a placeholder) |
+| `HOSTNAME` | `/etc/hostname` |
+| `DISK` | `archinstall1.sh` (`/dev/nvme0n1`, `/dev/sda`, `/dev/vda`, …) |
+| `HOME_SERVER` / `HOME_SERVER_LABEL` | Waybar home-host ping |
+| `VPS_HOST` / `VPS_A` / `VPS_AAAA` | Waybar VPS plate: DoH A/AAAA must match, then ping those IPs |
+| `KEYBOARD_EVENT` / `KEYBOARD_UNIQ` | layout-watch (display only) |
+| `RAM_TYPE` / `VRAM_TYPE` | memory / VRAM labels |
+
+Install scripts `source` this file. Waybar Python modules parse the same file (repo `globals.sh` or `~/.config/setup_linux/globals.sh` after `setup.sh`).
+
+Override path: `SETUP_LINUX_GLOBALS=/path/to/globals.sh`.
+
+## Layout
+
+1. Live ISO: edit `globals.sh`, run `archinstall1.sh`, then in chroot `archinstall2.sh`.
+2. As root on the installed system: `setup.sh` (paru, dwl, Waybar, ly).
+3. Session: ly → `start-dwl.sh`.
+
+Do not commit `globals.sh` or `forGrok.md`.
