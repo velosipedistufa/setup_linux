@@ -47,7 +47,7 @@ runuser -u "$USER_NAME" gsettings set org.gnome.desktop.interface icon-theme 'Fl
 systemctl enable --now bluetooth
 
 # waybar: repo is source of truth
-install -d "$HOME_DIR/.config/waybar/scripts" "$HOME_DIR/.config/mako" "$HOME_DIR/appearance/waybar" "$HOME_DIR/.config/setup_linux"
+install -d "$HOME_DIR/.config/waybar/scripts" "$HOME_DIR/.config/mako" "$HOME_DIR/appearance/waybar" "$HOME_DIR/.config/setup_linux" "$HOME_DIR/.cache/waybar"
 install -m 600 "$REPO/globals.sh" "$HOME_DIR/.config/setup_linux/globals.sh"
 chown "$USER_NAME:$USER_NAME" "$HOME_DIR/.config/setup_linux/globals.sh"
 cp -a "$REPO/waybar/." "$HOME_DIR/.config/waybar/"
@@ -55,6 +55,15 @@ cp -a "$REPO/waybar/." "$HOME_DIR/appearance/waybar/"
 sudo cp -a "$REPO/waybar/." /etc/xdg/waybar
 install -m 644 "$REPO/waybar/mako/config" "$HOME_DIR/.config/mako/config"
 chmod +x "$HOME_DIR/.config/waybar/scripts/"*.py "$HOME_DIR/.config/waybar/scripts/"*.sh
+# Seed RAM/VRAM cache as root (dmidecode). Later board/GPU changes re-probe.
+python3 - <<PY
+import os, sys
+sys.path.insert(0, "${REPO}/waybar/scripts")
+os.environ["HOME"] = "${HOME_DIR}"
+from lib import hw_info
+print(hw_info())
+PY
+chown -R "$USER_NAME:$USER_NAME" "$HOME_DIR/.cache/waybar"
 gcc -O2 -o "$HOME_DIR/.config/waybar/scripts/kbgroup" "$REPO/waybar/scripts/kbgroup.c" $(pkg-config --cflags --libs wayland-client)
 gcc -O2 -o "$HOME_DIR/.config/waybar/scripts/layout-watch" "$REPO/waybar/scripts/layout-watch.c" $(pkg-config --cflags --libs xkbcommon)
 cp "$HOME_DIR/.config/waybar/scripts/kbgroup" "$HOME_DIR/.config/waybar/scripts/layout-watch" "$HOME_DIR/appearance/waybar/scripts/"

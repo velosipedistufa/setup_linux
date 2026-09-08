@@ -9,8 +9,11 @@ USER_NAME=alex
 USER_PASSWORD=123
 HOSTNAME=arch
 
-# Whole-disk device. nvme/mmcblk get p1/p2; sda/vda get 1/2.
-# Examples: /dev/nvme0n1   /dev/sda   /dev/vda
+# YOU set this. Whole disk, not a partition (not nvme0n1p1, not sda1).
+# archinstall1.sh adds the partition suffix itself:
+#   /dev/nvme0n1  →  nvme0n1p1 EFI, nvme0n1p2 root
+#   /dev/sda      →  sda1 EFI, sda2 root
+#   /dev/vda      →  vda1 / vda2  (typical VM)
 DISK=/dev/nvme0n1
 
 # LAN host to ping on the bar (home server). Short label is the plate text.
@@ -31,6 +34,5 @@ KEYBOARD_EVENT=/dev/input/event4
 # udev ATTRS{uniq} so the user can read that node after replug. Empty = skip rule.
 KEYBOARD_UNIQ=7870E6CACAA1E4F6
 
-# Shown next to memory / VRAM on the bar.
-RAM_TYPE=DDR3
-VRAM_TYPE=GDDR5
+# RAM type (DDR3/4/5) and VRAM type (GDDR5/…) are not set here.
+# Detected from DMI / amdgpu on first run and whenever the board or GPU changes.

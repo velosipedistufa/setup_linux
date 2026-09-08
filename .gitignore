@@ -12,6 +12,7 @@ __pycache__/
 waybar/scripts/kbgroup
 waybar/scripts/layout-watch
 waybar/scripts/*.o
+waybar/hw.json
 
 # Generated / machine-specific udev (uniq + username)
 udev/99-layout-watch.rules

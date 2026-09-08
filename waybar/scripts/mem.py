@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""RAM used % + type from globals.sh."""
+"""RAM used % + type from DMI (cached; re-probed if the board changes)."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib import emit, g  # noqa: E402
+from lib import emit, hw_info  # noqa: E402
 
 
 def kB(meminfo: dict[str, int], key: str) -> int:
@@ -28,7 +28,7 @@ def main() -> None:
         return
     used = total - avail
     pct = int(used * 100 / total)
-    rtype = g("RAM_TYPE") or "RAM"
+    rtype = hw_info().get("ram_type") or "?"
     used_g = used / (1024 * 1024)
     total_g = total / (1024 * 1024)
     cls = "ok"

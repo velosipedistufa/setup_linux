@@ -13,8 +13,9 @@ import urllib.request
 from pathlib import Path
 
 CACHE = Path.home() / ".cache" / "waybar"
-HW_JSON = Path(__file__).resolve().parent.parent / "hw.json"
+HW_CACHE = CACHE / "hw.json"
 _GLOBALS: dict[str, str] | None = None
+_HW: dict | None = None
 
 # Nerd Fonts (ttf-nerd-fonts-symbols): md-expansion_card, md-memory, fa-globe
 ICON_GPU = "\U000f08ae"
@@ -98,10 +99,100 @@ def emit(text: str, tooltip: str = "", cls=None, percentage: int | None = None) 
 
 
 def read_hw() -> dict:
+    return hw_info()
+
+
+def _dmi(name: str) -> str:
+    return read_text(f"/sys/class/dmi/id/{name}") or ""
+
+
+def board_fp() -> str:
+    return "|".join(
+        [
+            _dmi("sys_vendor"),
+            _dmi("product_name"),
+            _dmi("board_name"),
+            _dmi("board_serial"),
+        ]
+    )
+
+
+def gpu_fp() -> str:
+    dev = amdgpu_device()
+    if not dev:
+        return ""
+    return "|".join(
+        [
+            read_text(dev / "vendor") or "",
+            read_text(dev / "device") or "",
+            read_text(dev / "subsystem_device") or "",
+        ]
+    )
+
+
+def detect_vram_type() -> str:
     try:
-        return json.loads(HW_JSON.read_text())
+        proc = run(["journalctl", "-k", "-b", "--no-pager"], timeout=4)
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return ""
+    blob = proc.stdout
+    for token in ("GDDR7", "GDDR6", "GDDR5", "GDDR4", "HBM3", "HBM2", "HBM"):
+        if token in blob:
+            return token
+    return ""
+
+
+def detect_ram_type() -> str:
+    try:
+        proc = run(["dmidecode", "-t", "memory"], timeout=4)
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return ""
+    if proc.returncode != 0:
+        return ""
+    found: list[str] = []
+    for line in proc.stdout.splitlines():
+        s = line.strip()
+        if s.startswith("Type:") and "Error Correction" not in s:
+            t = s.split(":", 1)[1].strip()
+            if t.startswith("DDR"):
+                found.append(t)
+    return found[0] if found else ""
+
+
+def hw_info() -> dict:
+    """RAM/VRAM types from cache, refreshed if board or GPU identity changed."""
+    global _HW
+    if _HW is not None:
+        return _HW
+    board = board_fp()
+    gpu = gpu_fp()
+    cached: dict = {}
+    try:
+        cached = json.loads(HW_CACHE.read_text())
     except (OSError, json.JSONDecodeError):
-        return {}
+        cached = {}
+    ram = cached.get("ram_type") or ""
+    vram = cached.get("vram_type") or ""
+    if cached.get("board_fp") != board:
+        ram = detect_ram_type() or ""
+    if cached.get("gpu_fp") != gpu or not vram:
+        vram = detect_vram_type() or vram
+    if cached.get("board_fp") == board and cached.get("ram_type") and not ram:
+        ram = cached.get("ram_type") or ""
+    out = {
+        "board_fp": board,
+        "gpu_fp": gpu,
+        "ram_type": ram,
+        "vram_type": vram,
+    }
+    if out != cached:
+        try:
+            cache_dir()
+            HW_CACHE.write_text(json.dumps(out, indent=2) + "\n")
+        except OSError:
+            pass
+    _HW = out
+    return out
 
 
 def run(cmd: list[str], timeout: float = 3.0) -> subprocess.CompletedProcess:

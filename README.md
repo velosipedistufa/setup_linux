@@ -15,11 +15,12 @@ $EDITOR globals.sh
 |---|---|
 | `USER_NAME` / `USER_PASSWORD` | `archinstall2.sh` user + password (`123` in the example is a placeholder) |
 | `HOSTNAME` | `/etc/hostname` |
-| `DISK` | `archinstall1.sh` (`/dev/nvme0n1`, `/dev/sda`, `/dev/vda`, …) |
+| `DISK` | **You pick this.** Whole disk only (`/dev/nvme0n1`, `/dev/sda`, `/dev/vda`). The install script invents `p1`/`1` itself. |
 | `HOME_SERVER` / `HOME_SERVER_LABEL` | Waybar home-host ping |
 | `VPS_HOST` / `VPS_A` / `VPS_AAAA` | Waybar VPS plate: DoH A/AAAA must match, then ping those IPs |
 | `KEYBOARD_EVENT` / `KEYBOARD_UNIQ` | layout-watch (display only) |
-| `RAM_TYPE` / `VRAM_TYPE` | memory / VRAM labels |
+
+RAM (DDR3/4/5) and VRAM (GDDR…) are **not** in globals — probed from the machine, cached, and refreshed if the board or GPU changes.
 
 Install scripts `source` this file. Waybar Python modules parse the same file (repo `globals.sh` or `~/.config/setup_linux/globals.sh` after `setup.sh`).
 

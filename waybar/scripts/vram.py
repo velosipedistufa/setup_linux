@@ -7,13 +7,12 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib import ICON_VRAM, amdgpu_device, emit, g, read_hw, read_text  # noqa: E402
+from lib import ICON_VRAM, amdgpu_device, emit, hw_info, read_text  # noqa: E402
 
 
 def main() -> None:
     dev = amdgpu_device()
-    hw = read_hw()
-    vtype = g("VRAM_TYPE") or hw.get("vram_type") or "GDDR5"
+    vtype = hw_info().get("vram_type") or "?"
     if not dev:
         emit(f"{ICON_VRAM} --", "amdgpu sysfs missing", "down")
         return
