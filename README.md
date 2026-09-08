@@ -13,7 +13,7 @@ $EDITOR globals.sh
 
 | Variable | Used for |
 |---|---|
-| `USER_NAME` / `USER_PASSWORD` | `archinstall2.sh` user + password (`123` in the example is a placeholder) |
+| `USER_NAME` / `USER_PASSWORD` | `archinstall2.sh` user + password (placeholders in the example) |
 | `HOSTNAME` | `/etc/hostname` |
 | `DISK` | **You pick this.** Whole disk only (`/dev/nvme0n1`, `/dev/sda`, `/dev/vda`). The install script invents `p1`/`1` itself. |
 | `HOME_SERVER` / `HOME_SERVER_LABEL` | Waybar home-host ping |
